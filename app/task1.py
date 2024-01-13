@@ -37,4 +37,4 @@ for x in xs:
 ax.set_xlabel("Время (t)")
 ax.set_ylabel("Значение концентрации (x)")
 
-plt.savefig("graph.png")
+plt.savefig("sol.png")
