@@ -27,5 +27,16 @@ for i in range(N):
     y.append(y_next)
     t.append(t_next)
 
-plt.plot(x, y)
+fig, ax = plt.subplots()
+
+ax.spines[["left", "bottom"]].set_position(("data", 0))
+ax.spines[["top", "right"]].set_visible(False)
+
+ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
+ax.text(1.01, 0, "x", transform=ax.get_yaxis_transform(), clip_on=False)
+ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
+ax.text(0.1, 1, "y", transform=ax.get_xaxis_transform(), clip_on=False)
+
+ax.plot(x, y)
+
 plt.savefig("attr.png")

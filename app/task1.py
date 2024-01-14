@@ -31,10 +31,16 @@ for x_start in x0:
 
 fig, ax = plt.subplots()
 
-for x in xs:
-    ax.plot(ts, x)
+ax.spines[["left", "bottom"]].set_position(("data", 0))
+ax.spines[["top", "right"]].set_visible(False)
+
+ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
+ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
 
 ax.set_xlabel("Время (t)")
 ax.set_ylabel("Значение концентрации (x)")
+
+for x in xs:
+    ax.plot(ts, x)
 
 plt.savefig("sol.png")
