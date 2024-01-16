@@ -20,12 +20,14 @@ for i, x in enumerate(x0, 1):
         print(f"Не выполняется условие 0 <= {x} < P для параметра {i}")
         exit()
 
-xs = []
-ts = [t0 + i * h for i in range(N + 1)]
+ts = [t0 + i * h for i in range(N + 1)]  # разбиение
+
+xs = []  # список результатов для всех значений x0
 for x_start in x0:
     x = [x_start]
     for i in range(N):
-        x_next = k * h * (P - x[i]) + x[i]
+        f = k * (P - x[i])
+        x_next = f * h + x[i]
         x.append(x_next)
     xs.append(x)
 
