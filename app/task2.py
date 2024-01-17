@@ -12,20 +12,26 @@ h = float(input())
 
 N = round((tN - t0) / h) + 1
 
-print("Начальные значения (x0 и y0):", end=" ")
-x0, y0 = map(float, input().split())
+NUM = 3
+print(f"Начальные значения (x0 и y0, {NUM} строчки):")
+xy = [tuple(map(float, input().split())) for _ in range(NUM)]
 
 t = [t0 + i * h for i in range(N + 1)]  # разбиение
 
-x = [x0]
-y = [y0]
-for i in range(N):
-    f = y[i]
-    g = -(x[i] ** 2 - 1) * y[i] - x[i] ** 3 + B * math.cos(t[i])
-    x_next = f * h + x[i]
-    y_next = g * h + y[i]
-    x.append(x_next)
-    y.append(y_next)
+xs = []
+ys = []
+for x0, y0 in xy:
+    x = [x0]
+    y = [y0]
+    for i in range(N):
+        f = y[i]
+        g = -(x[i] ** 2 - 1) * y[i] - x[i] ** 3 + B * math.cos(t[i])
+        x_next = f * h + x[i]
+        y_next = g * h + y[i]
+        x.append(x_next)
+        y.append(y_next)
+    xs.append(x)
+    ys.append(y)
 
 fig, ax = plt.subplots()
 
@@ -37,6 +43,7 @@ ax.text(1.01, 0, "x", transform=ax.get_yaxis_transform(), clip_on=False)
 ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
 ax.text(0.1, 1, "y", transform=ax.get_xaxis_transform(), clip_on=False)
 
-ax.plot(x, y)
+for i in range(NUM):
+    ax.plot(xs[i], ys[i])
 
 plt.savefig("attr.png")
