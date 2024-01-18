@@ -1,5 +1,4 @@
 import math
-
 import matplotlib.pyplot as plt
 
 B = 10
@@ -18,6 +17,7 @@ xy = [tuple(map(float, input().split())) for _ in range(NUM)]
 
 t = [t0 + i * h for i in range(N + 1)]  # разбиение
 
+# списки значений функций x(t) и y(t) для всех начальных условий (x0, y0)
 xs = []
 ys = []
 for x0, y0 in xy:
@@ -34,10 +34,8 @@ for x0, y0 in xy:
     ys.append(y)
 
 fig, ax = plt.subplots()
-
 ax.spines[["left", "bottom"]].set_position(("data", 0))
 ax.spines[["top", "right"]].set_visible(False)
-
 ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
 ax.text(1.01, 0, "x", transform=ax.get_yaxis_transform(), clip_on=False)
 ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
