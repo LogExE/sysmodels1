@@ -23,6 +23,8 @@ P0 = (0, 1)  # начальная точка
 R = math.sqrt(P0[0] ** 2 + P0[1] ** 2)  # радиус окружности
 TIMES = 100000  # столько раз проводим испытание
 
+print(f"Проведем {TIMES} испытаний")
+
 cnt = 0  # сколько раз получился остроугольный треугольник
 for _ in range(TIMES):
     ang1 = rand_angle()
@@ -33,4 +35,4 @@ for _ in range(TIMES):
     if all(cos_ang >= 0 for cos_ang in [cos_angle(P0, p1, p2), cos_angle(p1, P0, p2), cos_angle(p1, p2, P0)]):
         cnt += 1
 
-print(cnt / TIMES)
+print("Результат:", cnt / TIMES)
