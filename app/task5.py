@@ -16,7 +16,7 @@ def supply_demand() -> tuple[float, float]:
     return gen_norm(mean_supply, std_supply), gen_norm(mean_demand, std_demand)
 
 
-TIMES = 100000
+TIMES = 1000
 
 print(f"Проведем {TIMES} испытаний")
 total_diff = 0
