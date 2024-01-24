@@ -24,4 +24,4 @@ for i in range(TIMES):
     supply, demand = supply_demand()
     total_diff += abs(supply - demand)
 
-print("Результат:", total_diff / TIMES)
+print("Результат:", total_diff / TIMES, "кг")

@@ -35,7 +35,7 @@ for i in range(BINS):
     bins[i] /= TIMES
 
 plt.title("Выборочная функция распределения")
-plt.xlabel("Время выборка трех товаров")
+plt.xlabel("Время выбора трех товаров")
 plt.ylabel("Частота")
 
 plt.stairs(bins, edges, fill=True, ec="black", lw=2)

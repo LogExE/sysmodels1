@@ -3,16 +3,18 @@ import random
 
 # данная функция возвращает, а закончилась ли игра раньше 30 клетки в новой симуляции
 def sim_game() -> bool:
-    pos1 = pos2 = 0
+    pos1 = pos2 = 1
     who_steps = 1
-    while pos1 < 30 and pos2 < 30:
+    while True:
         cells = random.randint(1, 6)
         if who_steps == 1:
-            pos1 += cells
+            pos1 = min(pos1 + cells, 30)
             who_steps = 2
         else:
-            pos2 += cells
+            pos2 = min(pos2 + cells, 30)
             who_steps = 1
+        if pos1 == 30 or pos2 == 30:
+            break
         if pos1 == pos2:
             return True
     return False

@@ -35,4 +35,4 @@ for _ in range(TIMES):
     if all(cos_ang >= 0 for cos_ang in [cos_angle(P0, p1, p2), cos_angle(p1, P0, p2), cos_angle(p1, p2, P0)]):
         cnt += 1
 
-print("Результат:", cnt / TIMES)
+print("Оценка вероятности:", cnt / TIMES)
