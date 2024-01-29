@@ -42,7 +42,7 @@ class Task:
 
 
 # модель системы
-class System:
+class ServiceSystem:
     # фактическое значение бесконечности
     INF = 10 ** 18
 
@@ -54,14 +54,14 @@ class System:
         self.__queue = []
         self.__busy = False
         self.__time = 0
-        self.__duration_rand = dur_rand
+        self.__done = []
 
         self.__time_accept = 0
         self.__time_start = self.INF
         self.__time_finalize = self.INF
 
         self.__task = None  # по заданию прибор только один
-        self.__done = []
+        self.__duration_rand = dur_rand  # сохраняем указанную функцию генерации длительностей обслуживания
 
     def simulate(self, count) -> list[Task]:
         while len(self.__done) < count:
@@ -89,7 +89,7 @@ class System:
             self.__busy = True
             tk.time_began = self.__time
             self.__task = tk
-            to = self.__duration_rand(self.__WORK_INTENSITY)  # функция распределения указывается в конструкторе System
+            to = self.__duration_rand(self.__WORK_INTENSITY)  # используем указанную функцию генерации
             self.__time_finalize = self.__time + to
         self.__time_start = self.INF
 
@@ -115,5 +115,5 @@ class System:
 
 
 TO_DO = 1000
-done = System(exp_rand).simulate(TO_DO)
+done = ServiceSystem(exp_rand).simulate(TO_DO)
 pprint.pprint(done)
