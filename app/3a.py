@@ -27,9 +27,9 @@ def const_rand(mean: float) -> float:
 # модель требования
 @dataclass
 class Task:
-    time_accepted: int  # когда требование поступило
-    time_began: int | None  # когда требование взяли на исполнение
-    time_ended: int | None  # когда требование было исполнено
+    time_accepted: float  # когда требование поступило
+    time_began: float | None  # когда требование взяли на исполнение
+    time_ended: float | None  # когда требование было исполнено
 
 
 # модель системы
@@ -49,8 +49,10 @@ class ServiceSystem:
         self.__time_accept = 0
         self.__time_finalize = self.INF
 
-        self.__task = None  # по заданию прибор только один
-        self.__duration_rand = dur_rand  # сохраняем указанную функцию генерации длительностей обслуживания
+        # по заданию прибор только один, держим только одно обрабатываемое требование
+        self.__task = None
+        # сохраняем указанную функцию генерации длительностей обслуживания
+        self.__duration_rand = dur_rand
 
     def simulate(self, time) -> list[Task]:
         while self.__time <= time:
@@ -72,36 +74,51 @@ class ServiceSystem:
             self.__time = min(self.__time_accept, self.__time_finalize)
 
     def __accept(self):
+        # добавляем требование в очередь
         tk = Task(self.__time, None, None)
         self.__push_task(tk)
+        # подсчитываем следующий момент запуска процесса
         tu = exp_rand(self.__income_mean)  # Markov
         self.__time_accept = self.__time + tu
 
     def __start(self):
+        # достаем требование из очереди
         tk = self.__get_task()
+        # занимаем прибор
         self.__busy = True
+        # фиксируем время начала обработки требования
         tk.time_began = self.__time
+        # сохраняем требование в отдельную переменную
         self.__task = tk
+        # подсчитываем момент завершения обработки
         to = self.__duration_rand(self.__work_mean)  # используем указанную функцию генерации
         self.__time_finalize = self.__time + to
 
     def __finalize(self):
         tk = self.__task
         self.__task = None
+        # фиксируем время конца обработки требования
         tk.time_ended = self.__time
+        # добавляем его в список обработанных
         self.__mark_task(tk)
+        # освобождаем прибор
         self.__busy = False
+        # устанавливаем время начала процесса
         self.__time_finalize = self.INF
 
+    # добавить требование в очередь на обработку
     def __push_task(self, tk: Task):
         self.__queue.append(tk)
 
+    # получить очередное требование на обработку
     def __get_task(self) -> Task:
         return self.__queue.pop(0)
 
+    # отметить требование обработанным
     def __mark_task(self, tk: Task):
         self.__done.append(tk)
 
+    # присутствуют ли необслуженные требования в очереди?
     def __has_tasks(self) -> bool:
         return len(self.__queue) > 0
 
@@ -119,53 +136,43 @@ print()
 
 
 def average_processing_time(tasks: list[Task]) -> float:
-    s = 0
-    for task in tasks:
-        s += task.time_ended - task.time_accepted
-    return s / len(tasks)
+    return sum(task.time_ended - task.time_accepted for task in tasks) / len(tasks)
 
 
 def average_tasks_present(tasks: list[Task], total_time: float) -> float:
-    durs = [0] * len(tasks)
-    total = tasks[-1].time_ended - tasks[0].time_accepted
+    duration = [0] * len(tasks)
 
-    put = [task.time_accepted for task in tasks]
-    gone = [task.time_ended for task in tasks]
-
-    events = []
-    i = j = 0
-    while i < len(put) or j < len(gone):
-        if j == len(gone):
-            events.append((put[i], 1))
+    time = 0
+    prev_time = 0
+    i = 0
+    enqueued = []
+    while time != total_time:
+        if len(enqueued) > 0 and enqueued[0].time_ended == time:
+            duration[len(enqueued)] += time - prev_time
+            enqueued.pop(0)
+        elif i != len(tasks) and tasks[i].time_accepted == time:
+            duration[len(enqueued)] += time - prev_time
+            enqueued.append(tasks[i])
             i += 1
-        elif i == len(put):
-            events.append((gone[j], -1))
-            j += 1
-        elif put[i] < gone[j]:
-            events.append((put[i], 1))
-            i += 1
-        else:
-            events.append((gone[j], -1))
-            j += 1
+        prev_time = time
+        nxt = [total_time]
+        if len(enqueued) > 0:
+            nxt.append(enqueued[0].time_ended)
+        if i != len(tasks):
+            nxt.append(tasks[i].time_accepted)
+        time = min(nxt)
 
-    cnt = 0
-    prev = 0
-    for time, add in events:
-        durs[cnt] += time - prev
-        prev = time
-        cnt += add
-    durs[0] += total_time - events[-1][0]
-
-    return sum(k * durs[k] / total for k in range(len(tasks)))
+    est_probability = [dur / total_time for dur in duration]
+    return sum(k * est_probability[k] for k in range(len(duration)))
 
 
-for explain, rand in {
-    "Показательное распределение": exp_rand,
-    "Нормальное распределение": norm_rand,
-    "Распределение-константа": const_rand
-}.items():
-    tmp = "#" * 10
-    print(f"{tmp} {explain} {tmp}")
+for rand_name, rand in [
+    ("Показательное распределение", exp_rand),
+    ("Нормальное распределение", norm_rand),
+    ("Распределение-константа", const_rand)
+]:
+    decor = "#" * 10
+    print(f"{decor} {rand_name} {decor}")
     done = ServiceSystem(INCOME_INTENSITY, WORK_INTENSITY, rand).simulate(TIME)
     pprint.pprint(done[:10])
     print("Получился размер выборки:", len(done))
